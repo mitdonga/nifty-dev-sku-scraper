@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchSKUData } from '../services/api';
 import { formatDate } from '../utils/dateFormatter';
 import SKUDetailDrawer from './SKUDetailDrawer';
+
+const STATUS_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'scraping_done', label: 'Scraping Done' },
+  { value: 'category_not_match', label: 'Category Not Match' },
+  { value: 'no_result', label: 'No Result' },
+  { value: 'firecrawl_scrapper_error', label: 'Firecrawl Scrapper Error' },
+];
 
 function SKUTable() {
   const [data, setData] = useState([]);
@@ -9,16 +17,23 @@ function SKUTable() {
   const [error, setError] = useState(null);
   const [selectedSKU, setSelectedSKU] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [skuSearch, setSkuSearch] = useState('');
+  const debounceTimerRef = useRef(null);
+  const isInitialMount = useRef(true);
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const skuData = await fetchSKUData();
+      const filters = {};
+      if (statusFilter) {
+        filters.status = statusFilter;
+      }
+      if (skuSearch.trim()) {
+        filters.sku = skuSearch.trim();
+      }
+      const skuData = await fetchSKUData(filters);
       setData(skuData);
     } catch (err) {
       setError(err.message || 'Failed to load data');
@@ -27,6 +42,47 @@ function SKUTable() {
       setLoading(false);
     }
   };
+
+  // Initial load
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      loadData();
+    }
+  }, []);
+
+  // Status filter changes - call immediately
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      // Clear SKU search debounce timer when status changes
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      loadData();
+    }
+  }, [statusFilter]);
+
+  // Debounce SKU search - wait 5 seconds after user input
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      // Clear existing timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      // Set new timer for 5 seconds
+      debounceTimerRef.current = setTimeout(() => {
+        loadData();
+      }, 3000);
+    }
+
+    // Cleanup on unmount or when skuSearch changes
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [skuSearch]);
 
   if (loading) {
     return (
@@ -76,6 +132,43 @@ function SKUTable() {
         >
           Refresh
         </button>
+      </div>
+
+      {/* Filters Section */}
+      <div className="mb-6 px-2 flex flex-wrap gap-4 items-end">
+        {/* Status Filter */}
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+          <select
+            id="status-filter"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* SKU Search */}
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="sku-search" className="block text-sm font-medium text-gray-700 mb-2">
+            SKU Search
+          </label>
+          <input
+            id="sku-search"
+            type="text"
+            value={skuSearch}
+            onChange={(e) => setSkuSearch(e.target.value)}
+            placeholder="Search by SKU..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
