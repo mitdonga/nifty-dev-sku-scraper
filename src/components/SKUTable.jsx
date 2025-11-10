@@ -177,6 +177,9 @@ function SKUTable() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   SKU
                 </th>
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -218,6 +221,9 @@ function SKUTable() {
                     setIsDrawerOpen(true);
                   }}
                 >
+                  <td className="px-2 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{item.id || 'N/A'}</div>
+                  </td>
                   <td className="px-2 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{item.sku || 'N/A'}</div>
                   </td>

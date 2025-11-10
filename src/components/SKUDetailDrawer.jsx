@@ -9,18 +9,28 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
 
   useEffect(() => {
     if (isOpen && skuData) {
-      setActiveTab('attributes');
+      // If it's an error record, set error tab as default, otherwise attributes
+      if (skuData.status === 'firecrawl_scrapper_error' && skuData.error) {
+        setActiveTab('error');
+      } else {
+        setActiveTab('attributes');
+      }
     }
   }, [isOpen, skuData]);
 
   if (!isOpen || !skuData) return null;
 
-  const tabs = [
+  // Build tabs array - add Error tab first if it's an error record
+  const tabs = [];
+  if (skuData.status === 'firecrawl_scrapper_error' && skuData.error) {
+    tabs.push({ id: 'error', label: 'Error' });
+  }
+  tabs.push(
     { id: 'attributes', label: 'Attributes' },
     { id: 'custom-attributes', label: 'Custom Attributes' },
     { id: 'images', label: 'Images' },
-    { id: 'scrapped-websites', label: 'Scrapped Websites' },
-  ];
+    { id: 'scrapped-websites', label: 'Scrapped Websites' }
+  );
 
   return (
     <>
@@ -117,6 +127,14 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
 
         {/* Tab Content */}
         <div className="p-6">
+          {activeTab === 'error' && skuData.error && (
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Error Details</h3>
+              <pre className="text-sm text-gray-800 bg-white p-4 rounded border border-gray-200 overflow-auto max-h-[600px] whitespace-pre-wrap break-words">
+                {JSON.stringify(skuData.error, null, 2)}
+              </pre>
+            </div>
+          )}
           {activeTab === 'attributes' && <AttributesTab attributes={skuData.attributes} />}
           {activeTab === 'custom-attributes' && <CustomAttributesTab customAttributes={skuData.custom_attributes} />}
           {activeTab === 'images' && (
