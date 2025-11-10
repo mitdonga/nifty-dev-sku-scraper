@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AttributesTab from './tabs/AttributesTab';
+import CustomAttributesTab from './tabs/CustomAttributesTab';
 import ImagesTab from './tabs/ImagesTab';
 import ScrappedWebsitesTab from './tabs/ScrappedWebsitesTab';
 
@@ -16,6 +17,7 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
 
   const tabs = [
     { id: 'attributes', label: 'Attributes' },
+    { id: 'custom-attributes', label: 'Custom Attributes' },
     { id: 'images', label: 'Images' },
     { id: 'scrapped-websites', label: 'Scrapped Websites' },
   ];
@@ -116,6 +118,7 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
         {/* Tab Content */}
         <div className="p-6">
           {activeTab === 'attributes' && <AttributesTab attributes={skuData.attributes} />}
+          {activeTab === 'custom-attributes' && <CustomAttributesTab customAttributes={skuData.custom_attributes} />}
           {activeTab === 'images' && (
             <ImagesTab
               filteredImages={skuData.image_urls || []}
