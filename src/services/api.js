@@ -1,4 +1,4 @@
-const API_URL = 'https://n8n.mitdonga.com/webhook/nifty-skus';
+const API_URL = import.meta.env.VITE_API_URL
 
 /**
  * Fetch SKU data from the API

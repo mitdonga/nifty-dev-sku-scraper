@@ -26,7 +26,7 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
     tabs.push({ id: 'error', label: 'Error' });
   }
   tabs.push(
-    { id: 'attributes', label: 'Attributes' },
+    { id: 'attributes', label: 'Filterable Attributes' },
     { id: 'custom-attributes', label: 'Custom Attributes' },
     { id: 'images', label: 'Images' },
     { id: 'scrapped-websites', label: 'Scrapped Websites' }
@@ -135,7 +135,7 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
               </pre>
             </div>
           )}
-          {activeTab === 'attributes' && <AttributesTab attributes={skuData.attributes} />}
+          {activeTab === 'attributes' && <AttributesTab attributes={skuData.filterable_attributes} />}
           {activeTab === 'custom-attributes' && <CustomAttributesTab customAttributes={skuData.custom_attributes} />}
           {activeTab === 'images' && (
             <ImagesTab

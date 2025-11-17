@@ -206,9 +206,6 @@ function SKUTable() {
                 <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Custom Attributes Count
                 </th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Pre-defined Attributes Count
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -267,13 +264,6 @@ function SKUTable() {
                   <td className="px-2 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
                       {item.custom_attributes ? Object.keys(item.custom_attributes).length : 0}
-                    </div>
-                  </td>
-                  <td className="px-2 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {item.attributes 
-                        ? Object.values(item.attributes).filter(value => value !== null && value !== undefined && value !== '').length 
-                        : 0}
                     </div>
                   </td>
                 </tr>
