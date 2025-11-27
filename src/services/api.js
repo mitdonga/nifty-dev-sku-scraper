@@ -53,3 +53,28 @@ export async function fetchSKUData(filters = {}) {
   }
 }
 
+/**
+ * Fetch scraping stats from the API
+ * @returns {Promise<Object>} Object containing category-wise status statistics
+ */
+export async function fetchScrapingStats() {
+  try {
+    const response = await fetch('https://n8n.bizaudit.site/webhook/scraping-stats', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching scraping stats:', error);
+    throw error;
+  }
+}
+
