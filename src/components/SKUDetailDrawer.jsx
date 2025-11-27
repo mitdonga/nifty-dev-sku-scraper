@@ -103,6 +103,36 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
                 {skuData.search_result ? skuData.search_result.length : 0}
               </p>
             </div>
+            {skuData.execution_id && (
+              <div>
+                <span className="text-xs font-semibold text-gray-500 uppercase">Execution URL</span>
+                <p className="text-sm text-gray-900 mt-1">
+                  <a
+                    href={`${import.meta.env.VITE_SKU_SCRAPER_WORKFLOW_URL}/executions/${skuData.execution_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:text-indigo-800 underline break-all"
+                  >
+                    Execution #{skuData.execution_id}
+                  </a>
+                </p>
+              </div>
+            )}
+            {skuData.image_execution_id && (
+              <div>
+                <span className="text-xs font-semibold text-gray-500 uppercase">Image Execution URL</span>
+                <p className="text-sm text-gray-900 mt-1">
+                  <a
+                    href={`${import.meta.env.VITE_IMAGE_PROCESSING_WORKFLOW_URL}/executions/${skuData.image_execution_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:text-indigo-800 underline break-all"
+                  >
+                    Execution #{skuData.image_execution_id}
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
