@@ -161,31 +161,38 @@ function Stats() {
               className="bg-white rounded-lg shadow-lg overflow-hidden"
             >
               <div
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 cursor-pointer hover:from-indigo-600 hover:to-purple-700 transition-colors"
+                className="relative bg-gray-200 px-6 py-4 cursor-pointer hover:bg-gray-300 transition-colors overflow-hidden"
                 onClick={() => toggleCategory(category)}
               >
-                <div className="flex items-center justify-between">
+                {/* Progress bar background fill */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500"
+                  style={{ width: `${totalProgress}%` }}
+                ></div>
+                
+                {/* Content overlay */}
+                <div className="relative flex items-center justify-between z-10">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-xl font-bold text-white">{category}</h2>
-                      <span className="text-white text-sm font-semibold bg-white/20 px-3 py-1 rounded-full">
+                      <h2 className={`text-xl font-bold ${totalProgress > 50 ? 'text-white' : 'text-gray-800'}`}>
+                        {category}
+                      </h2>
+                      <span className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                        totalProgress > 50 
+                          ? 'text-white bg-white/20' 
+                          : 'text-gray-800 bg-gray-300'
+                      }`}>
                         {totalProgress.toFixed(1)}%
                       </span>
                     </div>
-                    <p className="text-indigo-100 text-sm mb-2">
+                    <p className={`text-sm mb-2 ${totalProgress > 50 ? 'text-indigo-100' : 'text-gray-600'}`}>
                       Total: {totalCount.toLocaleString()} items
                     </p>
-                    <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-full bg-white transition-all duration-500"
-                        style={{ width: `${totalProgress}%` }}
-                      ></div>
-                    </div>
                   </div>
                   <svg
-                    className={`w-6 h-6 text-white transition-transform duration-200 ml-4 flex-shrink-0 ${
-                      collapsed ? '' : 'rotate-180'
-                    }`}
+                    className={`w-6 h-6 transition-transform duration-200 ml-4 flex-shrink-0 ${
+                      totalProgress > 50 ? 'text-white' : 'text-gray-800'
+                    } ${collapsed ? '' : 'rotate-180'}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
