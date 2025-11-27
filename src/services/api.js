@@ -78,3 +78,28 @@ export async function fetchScrapingStats() {
   }
 }
 
+/**
+ * Fetch workflow stats from the webhook endpoint
+ * @returns {Promise<Array>} Array of workflow data with id, name, tags, and running status
+ */
+export async function fetchWorkflowStats() {
+  try {
+    const response = await fetch('https://n8n.bizaudit.site/webhook/workflow-stats', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching workflow stats:', error);
+    throw error;
+  }
+}
+
