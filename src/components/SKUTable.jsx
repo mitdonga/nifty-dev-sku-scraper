@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchSKUData } from '../services/api';
 import { formatDate } from '../utils/dateFormatter';
+import { categories } from '../constants';
 import SKUDetailDrawer from './SKUDetailDrawer';
 
 const STATUS_OPTIONS = [
@@ -18,6 +19,7 @@ function SKUTable() {
   const [selectedSKU, setSelectedSKU] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [skuSearch, setSkuSearch] = useState('');
   const debounceTimerRef = useRef(null);
   const isInitialMount = useRef(true);
@@ -29,6 +31,9 @@ function SKUTable() {
       const filters = {};
       if (statusFilter) {
         filters.status = statusFilter;
+      }
+      if (categoryFilter) {
+        filters.category = categoryFilter;
       }
       if (skuSearch.trim()) {
         filters.sku = skuSearch.trim();
@@ -61,6 +66,17 @@ function SKUTable() {
       loadData();
     }
   }, [statusFilter]);
+
+  // Category filter changes - call immediately
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      // Clear SKU search debounce timer when category changes
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      loadData();
+    }
+  }, [categoryFilter]);
 
   // Debounce SKU search - wait 5 seconds after user input
   useEffect(() => {
@@ -150,6 +166,26 @@ function SKUTable() {
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-2">
+            Category
+          </label>
+          <select
+            id="category-filter"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="">All</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
               </option>
             ))}
           </select>

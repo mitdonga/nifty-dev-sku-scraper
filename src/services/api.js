@@ -5,11 +5,12 @@ const API_URL = import.meta.env.VITE_API_URL
  * @param {Object} filters - Filter options
  * @param {string} filters.status - Status filter (scraping_done, category_not_match, no_result, firecrawl_scrapper_error)
  * @param {string} filters.sku - SKU search query
+ * @param {string} filters.category - Category filter
  * @returns {Promise<Array>} Array of SKU data items
  */
 export async function fetchSKUData(filters = {}) {
   try {
-    const { status, sku } = filters;
+    const { status, sku, category } = filters;
     
     // Build URL with query parameters
     let url = API_URL;
@@ -21,6 +22,10 @@ export async function fetchSKUData(filters = {}) {
     
     if (sku) {
       queryParams.push(`sku=${encodeURIComponent(sku)}`);
+    }
+    
+    if (category) {
+      queryParams.push(`category=${encodeURIComponent(category)}`);
     }
     
     if (queryParams.length > 0) {
