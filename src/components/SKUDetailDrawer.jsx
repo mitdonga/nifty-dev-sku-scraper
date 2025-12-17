@@ -133,6 +133,30 @@ function SKUDetailDrawer({ isOpen, onClose, skuData }) {
                 </p>
               </div>
             )}
+            {skuData.item_category_id && (
+              <div>
+                <span className="text-xs font-semibold text-gray-500 uppercase">Category ID</span>
+                <p className="text-sm text-gray-900 mt-1">
+                  {skuData.item_category_id}
+                </p>
+              </div>
+            )}
+            {skuData.item_group_id && (
+              <div>
+                <span className="text-xs font-semibold text-gray-500 uppercase">Group ID</span>
+                <p className="text-sm text-gray-900 mt-1">
+                  {skuData.item_group_id}
+                </p>
+              </div>
+            )}
+            {skuData.item_group_name && (
+              <div>
+                <span className="text-xs font-semibold text-gray-500 uppercase">Group Name</span>
+                <p className="text-sm text-gray-900 mt-1">
+                  {skuData.item_group_name}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
