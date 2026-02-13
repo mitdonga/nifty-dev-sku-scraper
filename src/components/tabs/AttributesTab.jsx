@@ -1,5 +1,15 @@
 function AttributesTab({ attributes }) {
-  if (!attributes || Object.keys(attributes).length === 0) {
+  // Parse JSON string if the database returns filterable_attributes as text
+  let parsed = attributes;
+  if (typeof attributes === 'string' && attributes.trim()) {
+    try {
+      parsed = JSON.parse(attributes);
+    } catch {
+      parsed = null;
+    }
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || Object.keys(parsed).length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
         No attributes available
@@ -9,7 +19,7 @@ function AttributesTab({ attributes }) {
 
   return (
     <div className="space-y-4">
-      {Object.entries(attributes).map(([key, value]) => {        
+      {Object.entries(parsed).map(([key, value]) => {        
         return (
           <div key={key} className="border-b border-gray-100 pb-4 last:border-b-0">
             <div className="flex">

@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import ImagePreviewModal from '../ImagePreviewModal';
 
 function ImagesTab({ filteredImages, allImages }) {
-  const [showAllImages, setShowAllImages] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({});
 
-  const displayImages = showAllImages ? allImages : filteredImages;
+  const filteredSet = new Set(filteredImages);
 
   // Load image dimensions
   useEffect(() => {
@@ -89,33 +88,22 @@ function ImagesTab({ filteredImages, allImages }) {
         )}
       </div>
 
-      {/* Show All Images Button */}
-      {allImages.length > filteredImages.length && (
-        <div className="border-t border-gray-200 pt-6">
-          <button
-            onClick={() => setShowAllImages(!showAllImages)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-          >
-            {showAllImages ? 'Show Filtered Images Only' : `Show All Images (${allImages.length})`}
-          </button>
-        </div>
-      )}
-
-      {/* All Images Section */}
-      {showAllImages && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            All Images ({allImages.length})
-          </h3>
-          {allImages.length > 0 ? (
-            <div className="grid grid-cols-3 gap-4">
-              {allImages.map((imageUrl, index) => (
+      {/* All Images Section - always visible, filtered ones highlighted */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          All Images ({allImages.length})
+        </h3>
+        {allImages.length > 0 ? (
+          <div className="grid grid-cols-3 gap-4">
+            {allImages.map((imageUrl, index) => {
+              const isFiltered = filteredSet.has(imageUrl);
+              return (
                 <div
                   key={index}
-                  className={`relative aspect-square cursor-pointer group overflow-hidden rounded-lg border transition-all ${
-                    filteredImages.includes(imageUrl)
-                      ? 'border-indigo-500 border-2'
-                      : 'border-gray-200 hover:border-indigo-500'
+                  className={`relative aspect-square cursor-pointer group overflow-hidden rounded-lg border-2 transition-all ${
+                    isFiltered
+                      ? 'border-indigo-500 ring-2 ring-indigo-200'
+                      : 'border-gray-200 hover:border-gray-300'
                   }`}
                   onClick={() => handleImageClick(imageUrl)}
                 >
@@ -132,24 +120,24 @@ function ImagesTab({ filteredImages, allImages }) {
                       {getImageDimensions(imageUrl)}
                     </div>
                   )}
+                  {isFiltered && (
+                    <div className="absolute top-2 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded font-medium shadow">
+                      Filtered
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
                     <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">
                       Click to preview
                     </span>
                   </div>
-                  {filteredImages.includes(imageUrl) && (
-                    <div className="absolute top-2 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded">
-                      Filtered
-                    </div>
-                  )}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No images available</p>
-          )}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No images available</p>
+        )}
+      </div>
 
       {/* Image Preview Modal */}
       {isModalOpen && selectedImage && (
