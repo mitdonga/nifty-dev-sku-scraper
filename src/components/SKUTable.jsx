@@ -24,13 +24,17 @@ function SKUTable() {
   const [skuSearch, setSkuSearch] = useState('');
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [initCategoryOptions, setInitCategoryOptions] = useState([]);
+  const REFRESH_INTERVAL_SEC = 3 * 60; // 3 minutes
+  const [countdownSeconds, setCountdownSeconds] = useState(REFRESH_INTERVAL_SEC);
   const debounceTimerRef = useRef(null);
   const isInitialMount = useRef(true);
+  const isLoadingRef = useRef(false);
 
   const categories = categoryOptions.length > 0 ? categoryOptions : defaultCategories;
 
   const loadData = async () => {
     try {
+      isLoadingRef.current = true;
       setLoading(true);
       setError(null);
       const filters = {};
@@ -52,7 +56,9 @@ function SKUTable() {
       setError(err.message || 'Failed to load data');
       console.error('Error loading data:', err);
     } finally {
+      isLoadingRef.current = false;
       setLoading(false);
+      setCountdownSeconds(REFRESH_INTERVAL_SEC); // Reset auto-refresh timer
     }
   };
 
@@ -129,6 +135,24 @@ function SKUTable() {
     };
   }, [skuSearch]);
 
+  // Auto-refresh every 3 minutes
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCountdownSeconds((prev) => {
+        if (prev <= 0) {
+          if (!isLoadingRef.current) {
+            loadData();
+            return REFRESH_INTERVAL_SEC;
+          }
+          return prev; // Stay at 0, retry next second
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -171,12 +195,17 @@ function SKUTable() {
     <div className="w-full max-w-full px-1 py-8">
       <div className="mb-6 flex justify-between items-center px-2">
         <h1 className="text-3xl font-bold text-gray-800">SKU Data</h1>
-        <button
-          onClick={loadData}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-        >
-          Refresh
-        </button>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-600">
+            Auto refresh in <span className="font-semibold text-indigo-600">{Math.floor(countdownSeconds / 60)}:{(countdownSeconds % 60).toString().padStart(2, '0')}</span>
+          </span>
+          <button
+            onClick={loadData}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Filters Section */}
