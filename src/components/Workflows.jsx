@@ -24,6 +24,12 @@ function Workflows() {
     loadWorkflows();
   }, []);
 
+  // Poll workflow status every 2 minutes while on this page
+  useEffect(() => {
+    const intervalId = setInterval(loadWorkflows, 2 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
